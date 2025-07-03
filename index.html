@@ -2,69 +2,105 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <title>Hypotheektool Cas & Jolijn</title>
+  <title>Hypotheektool</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    // 🔐 Eenvoudige toegangscodebeveiliging
-    const toegangscode = "eliosam";
-    if (sessionStorage.getItem("toegangVerleend") !== "true") {
-      const invoer = prompt("Toegangscode vereist:");
-      if (invoer !== toegangscode) {
-        alert("Ongeldige toegangscode.");
-        document.write("<h1 style='text-align:center;margin-top:20vh;font-family:sans-serif;'>Toegang geweigerd</h1>");
-        throw new Error("Toegang geweigerd");
-      } else {
-        sessionStorage.setItem("toegangVerleend", "true");
-      }
-    }
-  </script>
+  <style>
+    body { font-family: sans-serif; }
+    .warning { background-color: #fee2e2; border: 1px solid #f87171; padding: 10px; border-radius: 6px; }
+  </style>
 </head>
 <body class="bg-gray-50 text-gray-800 p-6">
-  <div class="max-w-6xl mx-auto">
-    <h1 class="text-3xl font-bold mb-4">🏠 Hypotheektool Cas & Jolijn</h1>
+  <div id="toegang" class="max-w-lg mx-auto bg-white p-6 rounded shadow text-center mt-24">
+    <h1 class="text-xl font-bold mb-4">🔒 Hypotheektool</h1>
+    <p class="mb-2">Voer toegangscode in:</p>
+    <input id="wachtwoord" type="password" class="border p-2 rounded w-full mb-4 text-center" />
+    <button onclick="checkToegang()" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded w-full">Doorgaan</button>
+    <p id="fout" class="text-red-500 text-sm mt-2 hidden">Onjuiste toegangscode</p>
+  </div>
 
-    <form id="hypotheekForm" class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded shadow">
-      <div><label class="block">Koopprijs woning</label><input type="number" id="koopprijs" value="410000" class="w-full border p-2 rounded" /></div>
-      <div><label class="block">Taxatiewaarde woning</label><input type="number" id="taxatiewaarde" value="400000" class="w-full border p-2 rounded" /></div>
-      <div><label class="block">Energielabel</label>
-        <select id="energielabel" class="w-full border p-2 rounded">
-          <option value="A">A</option><option value="B" selected>B</option>
-          <option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option>
-        </select>
-      </div>
-      <div><label class="block">Eigen geld</label><input type="number" id="eigengeld" value="5000" class="w-full border p-2 rounded" /></div>
-      <div><label class="block">Hoogte hypotheek</label><input type="number" id="hypotheek" value="280000" class="w-full border p-2 rounded" /></div>
-      <div><label class="block">Rente hypotheek (%)</label><input type="number" step="0.01" id="renteHypotheek" value="3.7" class="w-full border p-2 rounded" /></div>
-      <div><label class="block">Familiebank 1</label><input type="number" id="familiebank1" value="65000" class="w-full border p-2 rounded" /></div>
-      <div><label class="block">Familiebank 2</label><input type="number" id="familiebank2" value="65000" class="w-full border p-2 rounded" /></div>
-      <div><label class="block">Rente familiebank (%)</label><input type="number" step="0.01" id="renteFamiliebank" value="5" class="w-full border p-2 rounded" /></div>
-      <div><label class="block">Terugschenking ouders (%)</label><input type="number" step="0.1" id="schenkingProcent" value="33" class="w-full border p-2 rounded" /></div>
-      <div><label class="block">Marktconforme rente (%)</label><input type="number" step="0.01" id="marktconformeRente" value="4.5" class="w-full border p-2 rounded" /></div>
-      <div><label class="block">Inkomen Cas</label><input type="number" id="inkomenCas" value="39000" class="w-full border p-2 rounded" /></div>
-      <div><label class="block">Inkomen Jolijn</label><input type="number" id="inkomenJolijn" value="29000" class="w-full border p-2 rounded" /></div>
-      <div><label class="block">Kosten koper</label><input type="number" id="kostenKoper" value="15000" class="w-full border p-2 rounded" /></div>
-      <div><label class="block">Studieschuld</label><input type="number" id="studieschuld" value="29000" class="w-full border p-2 rounded" /></div>
-    </form>
+  <div id="app" class="hidden">
+    <div class="max-w-6xl mx-auto">
+      <h1 class="text-3xl font-bold mb-4">🏠 Hypotheekberekening Familiebank</h1>
 
-    <div id="uitleg" class="text-sm text-gray-600 mt-4 italic"></div>
+      <form id="hypotheekForm" class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded shadow">
+        <div><label class="block font-medium">Koopprijs woning</label>
+          <input type="number" id="koopprijs" value="410000" class="w-full border p-2 rounded" /></div>
+        <div><label class="block font-medium">Taxatiewaarde woning</label>
+          <input type="number" id="taxatiewaarde" value="400000" class="w-full border p-2 rounded" /></div>
+        <div><label class="block font-medium">Energielabel</label>
+          <select id="energielabel" class="w-full border p-2 rounded">
+            <option value="A">A</option><option value="B" selected>B</option><option value="C">C</option>
+            <option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option>
+          </select></div>
+        <div><label class="block font-medium">Eigen geld</label>
+          <input type="number" id="eigengeld" value="5000" class="w-full border p-2 rounded" /></div>
+        <div><label class="block font-medium">Hypotheek</label>
+          <input type="number" id="hypotheek" value="280000" class="w-full border p-2 rounded" /></div>
+        <div><label class="block font-medium">Rente hypotheek (%)</label>
+          <input type="number" step="0.01" id="renteHypotheek" value="3.7" class="w-full border p-2 rounded" /></div>
+        <div><label class="block font-medium">Familiebank 1</label>
+          <input type="number" id="familiebank1" value="65000" class="w-full border p-2 rounded" /></div>
+        <div><label class="block font-medium">Familiebank 2</label>
+          <input type="number" id="familiebank2" value="65000" class="w-full border p-2 rounded" /></div>
+        <div><label class="block font-medium">Rente familiebank (%)</label>
+          <input type="number" step="0.01" id="renteFamiliebank" value="5" class="w-full border p-2 rounded" /></div>
+        <div><label class="block font-medium">Terugschenking ouders (%)</label>
+          <input type="number" step="0.1" id="schenkingProcent" value="33" class="w-full border p-2 rounded" /></div>
+        <div><label class="block font-medium">Marktconforme rente (%)</label>
+          <input type="number" step="0.01" id="marktconformeRente" value="4.5" class="w-full border p-2 rounded" /></div>
+        <div class="flex items-center space-x-2 mt-6">
+          <input type="checkbox" id="suggestieRente" class="form-checkbox" />
+          <label for="suggestieRente" class="text-sm">Gebruik maximaal toegestane rente (marktconform + 25%)</label>
+        </div>
+        <div><label class="block font-medium">Inkomen Cas</label>
+          <input type="number" id="inkomenCas" value="39000" class="w-full border p-2 rounded" /></div>
+        <div><label class="block font-medium">Inkomen Jolijn</label>
+          <input type="number" id="inkomenJolijn" value="29000" class="w-full border p-2 rounded" /></div>
+        <div><label class="block font-medium">Kosten koper</label>
+          <input type="number" id="kostenKoper" value="15000" class="w-full border p-2 rounded" /></div>
+        <div><label class="block font-medium">Studieschuld</label>
+          <input type="number" id="studieschuld" value="29000" class="w-full border p-2 rounded" /></div>
+      </form>
+      <div id="uitleg" class="mt-6 text-sm text-gray-600"></div>
+      <div id="waarschuwing" class="mt-4 hidden warning text-red-700 font-medium text-center"></div>
 
-    <h2 class="text-xl font-bold mt-10 mb-2">📊 Financieringsconstructie</h2>
-    <div class="overflow-x-auto"><table class="min-w-full bg-white rounded shadow text-sm"><tbody id="constructieTabel"></tbody></table></div>
+      <h2 class="text-xl font-bold mt-10 mb-2">🏗️ Financieringsconstructie</h2>
+      <table class="w-full text-sm table-auto bg-white border border-gray-300 rounded">
+        <tbody id="constructieTabel"></tbody>
+      </table>
 
-    <h2 class="text-xl font-bold mt-10 mb-2">📉 Maandlasten (bruto & netto)</h2>
-    <div class="overflow-x-auto"><table class="min-w-full bg-white rounded shadow text-sm">
-      <thead class="bg-gray-100">
-        <tr><th class="p-2 text-left">Component</th><th class="p-2 text-left">Bruto (€)</th><th class="p-2 text-left">Netto (€)</th></tr>
-      </thead>
-      <tbody id="maandlastTabel"></tbody>
-    </table></div>
+      <h2 class="text-xl font-bold mt-10 mb-2">📉 Maandlasten (bruto & netto)</h2>
+      <table class="w-full text-sm table-auto bg-white border border-gray-300 rounded">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="p-2 border">Component</th>
+            <th class="p-2 border">Bruto (€)</th>
+            <th class="p-2 border">Netto (€)</th>
+          </tr>
+        </thead>
+        <tbody id="maandlastTabel"></tbody>
+      </table>
+    </div>
   </div>
 
   <script>
+    const toegangscode = "eliosam";
+    function checkToegang() {
+      const invoer = document.getElementById("wachtwoord").value;
+      if (invoer === toegangscode) {
+        document.getElementById("toegang").classList.add("hidden");
+        document.getElementById("app").classList.remove("hidden");
+        updateTables();
+      } else {
+        document.getElementById("fout").classList.remove("hidden");
+      }
+    }
+
     const form = document.getElementById("hypotheekForm");
+    const uitlegBox = document.getElementById("uitleg");
     const constructieTabel = document.getElementById("constructieTabel");
     const maandlastTabel = document.getElementById("maandlastTabel");
-    const uitlegBox = document.getElementById("uitleg");
+    const waarschuwing = document.getElementById("waarschuwing");
 
     form.oninput = updateTables;
 
@@ -73,6 +109,7 @@
       const mkbVrijstelling = 0.1331;
       const algemeneKorting = 3000;
       const arbeidskorting = Math.max(0, Math.min(5000, inkomen * 0.15));
+
       const belastbaar = Math.max(0, inkomen - zelfstandigenaftrek);
       const belastbaarNaMkb = belastbaar * (1 - mkbVrijstelling);
       const belasting = belastbaarNaMkb * 0.3697;
@@ -90,74 +127,107 @@
       const fb1 = +form.familiebank1.value || 0;
       const fb2 = +form.familiebank2.value || 0;
       const renteFBInput = (+form.renteFamiliebank.value || 0) / 100;
-      const marktconformeRente = (+form.marktconformeRente.value || 0) / 100;
       let renteFB = renteFBInput;
       let schenkingPct = (+form.schenkingProcent.value || 0) / 100;
-    
+      const marktconform = (+form.marktconformeRente.value || 0) / 100;
+      const suggestie = form.suggestieRente.checked;
       const inkomenCas = +form.inkomenCas.value || 0;
       const inkomenJolijn = +form.inkomenJolijn.value || 0;
       const kostenKoper = +form.kostenKoper.value || 0;
       const studieschuld = +form.studieschuld.value || 0;
 
-      const energielabelCorrectie = energielabel === "A" || energielabel === "B" ? 5000 : (["D","E","F"].includes(energielabel) ? -5000 : 0);
-      const totaalFamiliebank = fb1 + fb2;
-      const totaalFinanciering = hypotheek + totaalFamiliebank + eigenGeld + energielabelCorrectie;
-      const overbieding = Math.max(0, koopprijs - taxatiewaarde);
-      const totaleKosten = overbieding + kostenKoper + studieschuld;
-      const restNaKosten = totaalFinanciering - totaleKosten;
+      // Energielabel correctie
+      let labelCorrectie = 0;
+      if (energielabel === "A" || energielabel === "B") labelCorrectie = 5000;
+      if (energielabel === "D" || energielabel === "E" || energielabel === "F") labelCorrectie = -5000;
 
+      if (suggestie) {
+        renteFB = marktconform * 1.25;
+        schenkingPct = 1 - (marktconform / renteFB);
+        form.renteFamiliebank.value = (renteFB * 100).toFixed(2);
+        form.schenkingProcent.value = (schenkingPct * 100).toFixed(1);
+        uitlegBox.innerHTML = `
+          <strong>Automatische berekening toegepast:</strong><br>
+          Marktconforme rente: ${(marktconform * 100).toFixed(2)}%<br>
+          Verhoogde rente: ${(renteFB * 100).toFixed(2)}%<br>
+          Terugschenking: ${(schenkingPct * 100).toFixed(1)}% van de rente
+        `;
+      } else {
+        uitlegBox.innerHTML = "";
+      }
+
+      const benodigdeFinanciering = koopprijs + kostenKoper + studieschuld - eigenGeld;
+      const beschikbareFinanciering = hypotheek + fb1 + fb2 + labelCorrectie;
+
+      const teKort = benodigdeFinanciering - beschikbareFinanciering;
+      const familiebankMax = fb1 + fb2;
+      const familiebankBenodigd = Math.max(0, benodigdeFinanciering - hypotheek - labelCorrectie);
+      const familiebankGebruikt = Math.min(familiebankBenodigd, familiebankMax);
+
+      const fbProcent1 = fb1 / familiebankMax;
+      const gebruiktFB1 = Math.round(fbProcent1 * familiebankGebruikt);
+      const gebruiktFB2 = Math.round(familiebankGebruikt - gebruiktFB1);
+      // Maandlasten berekenen
       const brutoHypotheek = hypotheek * 0.0054 * renteHypotheek / 0.038;
-      const brutoFamiliebank = totaalFamiliebank * 0.0054 * renteFB / 0.05;
+      const brutoFB = familiebankGebruikt * 0.0054 * renteFB / 0.05;
+
       const renteHypMaand = hypotheek * renteHypotheek / 12;
-      const renteFBMaand = totaalFamiliebank * renteFB / 12 * 0.75;
-      const renteAftrekCas = Math.min((renteHypMaand + renteFBMaand) / 2, schatBelastingdruk(inkomenCas) / 12) * 0.37;
-      const renteAftrekJolijn = Math.min((renteHypMaand + renteFBMaand) / 2, schatBelastingdruk(inkomenJolijn) / 12) * 0.37;
-      const totaleRenteAftrek = renteAftrekCas + renteAftrekJolijn;
-      const schenkingMaand = totaalFamiliebank * renteFB * schenkingPct / 12;
+      const renteFBMaand = familiebankGebruikt * renteFB / 12 * 0.75;
+
+      const aftrekCas = Math.min((renteHypMaand + renteFBMaand) / 2, schatBelastingdruk(inkomenCas) / 12) * 0.37;
+      const aftrekJolijn = Math.min((renteHypMaand + renteFBMaand) / 2, schatBelastingdruk(inkomenJolijn) / 12) * 0.37;
+      const totaalAftrek = aftrekCas + aftrekJolijn;
+
+      const schenkingMaand = familiebankGebruikt * renteFB * schenkingPct / 12;
+
       const nettoHypotheek = brutoHypotheek - renteHypMaand * 0.37;
-      const nettoFamiliebank = brutoFamiliebank - renteFBMaand * 0.37 - schenkingMaand;
-      const nettoTotaal = brutoHypotheek + brutoFamiliebank - totaleRenteAftrek - schenkingMaand;
+      const nettoFamiliebank = brutoFB - renteFBMaand * 0.37 - schenkingMaand;
+      const nettoTotaal = brutoHypotheek + brutoFB - totaalAftrek - schenkingMaand;
 
       constructieTabel.innerHTML = `
-        <tr><td class="p-2">Hypotheek</td><td class="p-2">€${hypotheek.toLocaleString()}</td></tr>
-        <tr><td class="p-2">Familiebank 1</td><td class="p-2">€${fb1.toLocaleString()}</td></tr>
-        <tr><td class="p-2">Familiebank 2</td><td class="p-2">€${fb2.toLocaleString()}</td></tr>
-        <tr><td class="p-2">Eigen geld</td><td class="p-2">€${eigenGeld}</td></tr>
-        <tr><td class="p-2">Correctie energielabel (${energielabel})</td><td class="p-2">€${energielabelCorrectie}</td></tr>
-        <tr><td class="p-2 font-bold">Totale financiering</td><td class="p-2 font-bold">€${totaalFinanciering.toLocaleString()}</td></tr>
-        <tr><td class="p-2">Kosten koper</td><td class="p-2">€${kostenKoper}</td></tr>
-        <tr><td class="p-2">Studieschuld</td><td class="p-2">€${studieschuld}</td></tr>
-        <tr><td class="p-2">Overbieding</td><td class="p-2">€${overbieding}</td></tr>
-        <tr><td class="p-2 font-bold">Resterend na kosten</td><td class="p-2 font-bold">€${Math.round(restNaKosten)}</td></tr>
+        <tr><td class="p-2 border">Hypotheek</td><td class="p-2 border">€${hypotheek.toLocaleString()}</td></tr>
+        <tr><td class="p-2 border">Familiebank 1 (benodigd)</td><td class="p-2 border">€${gebruiktFB1}</td></tr>
+        <tr><td class="p-2 border">Familiebank 2 (benodigd)</td><td class="p-2 border">€${gebruiktFB2}</td></tr>
+        <tr><td class="p-2 border">Labelcorrectie</td><td class="p-2 border">€${labelCorrectie}</td></tr>
+        <tr><td class="p-2 border">Eigen geld</td><td class="p-2 border">€${eigenGeld}</td></tr>
+        <tr><td class="p-2 border font-bold">Totaal beschikbaar</td><td class="p-2 border font-bold">€${hypotheek + familiebankGebruikt + eigenGeld + labelCorrectie}</td></tr>
+        <tr><td class="p-2 border">Totale kosten (koopprijs + KK + studieschuld)</td><td class="p-2 border">€${benodigdeFinanciering}</td></tr>
       `;
 
       maandlastTabel.innerHTML = `
         <tr>
-          <td class="p-2">Hypotheek</td>
-          <td class="p-2">€${brutoHypotheek.toFixed(0)}</td>
-          <td class="p-2">€${nettoHypotheek.toFixed(0)}</td>
+          <td class="p-2 border">Hypotheek</td>
+          <td class="p-2 border">€${brutoHypotheek.toFixed(0)}</td>
+          <td class="p-2 border">€${nettoHypotheek.toFixed(0)}</td>
         </tr>
         <tr>
-          <td class="p-2">Familiebank</td>
-          <td class="p-2">€${brutoFamiliebank.toFixed(0)}</td>
-          <td class="p-2">€${nettoFamiliebank.toFixed(0)}</td>
+          <td class="p-2 border">Familiebank</td>
+          <td class="p-2 border">€${brutoFB.toFixed(0)}</td>
+          <td class="p-2 border">€${nettoFamiliebank.toFixed(0)}</td>
         </tr>
         <tr>
-          <td class="p-2">Renteaftrek (totaal)</td>
-          <td class="p-2">-€${totaleRenteAftrek.toFixed(0)} p/m (Cas: €${renteAftrekCas.toFixed(0)}, Jolijn: €${renteAftrekJolijn.toFixed(0)})</td>
-          <td class="p-2">-€${totaleRenteAftrek.toFixed(0)} p/m (Cas: €${renteAftrekCas.toFixed(0)}, Jolijn: €${renteAftrekJolijn.toFixed(0)})</td>
+          <td class="p-2 border">Renteaftrek (Cas/Jolijn)</td>
+          <td class="p-2 border" colspan="2">-€${totaalAftrek.toFixed(0)} (Cas: €${aftrekCas.toFixed(0)}, Jolijn: €${aftrekJolijn.toFixed(0)})</td>
         </tr>
         <tr>
-          <td class="p-2">Schenking ouders</td>
-          <td class="p-2">-€${schenkingMaand.toFixed(0)} p/m</td>
-          <td class="p-2">-€${schenkingMaand.toFixed(0)} p/m</td>
+          <td class="p-2 border">Schenking ouders</td>
+          <td class="p-2 border">-€${schenkingMaand.toFixed(0)}</td>
+          <td class="p-2 border">-€${schenkingMaand.toFixed(0)}</td>
         </tr>
-        <tr>
-          <th class="p-2">Totaal</th>
-          <th class="p-2">€${(brutoHypotheek + brutoFamiliebank).toFixed(0)}</th>
-          <th class="p-2">€${nettoTotaal.toFixed(0)}</th>
+        <tr class="font-bold">
+          <td class="p-2 border">Totaal</td>
+          <td class="p-2 border">€${(brutoHypotheek + brutoFB).toFixed(0)}</td>
+          <td class="p-2 border">€${nettoTotaal.toFixed(0)}</td>
         </tr>
       `;
+
+      if (teKort > 0) {
+        waarschuwing.classList.remove("hidden");
+        waarschuwing.innerHTML = `🚨 Je komt €${Math.round(teKort)} tekort om deze woning te kunnen betalen met de huidige opzet.`;
+      } else {
+        waarschuwing.classList.add("hidden");
+        waarschuwing.innerHTML = "";
+      }
     }
 
     updateTables();
