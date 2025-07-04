@@ -1,56 +1,64 @@
 <!DOCTYPE html>
 <html lang="nl">
-<head>
-  <meta charset="UTF-8" />
-  <title>Hypotheekberekening</title>
-  <script defer src="berekening.js"></script>
-  <style>
-    body { font-family: sans-serif; margin: 20px; }
-    label { display: block; margin-bottom: 6px; }
-    input { margin-bottom: 10px; width: 180px; padding: 4px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background-color: #f5f5f5; }
-    .subtle { color: #666; font-size: 0.9em; font-style: italic; }
-  </style>
-</head>
-<body>
-  <h2>Hypotheek Invoervelden</h2>
-  <form id="hypotheekForm">
-    <label>Hoogte hypotheek: <input type="number" id="hypotheek" value="280000" /></label>
-    <label>Rente hypotheek (%): <input type="number" id="renteHypotheek" value="3.8" step="0.01" /></label>
-    <label>Familiebank 1: <input type="number" id="familiebank1" value="60000" /></label>
-    <label>Familiebank 2: <input type="number" id="familiebank2" value="65000" /></label>
-    <label>Rente familiebank (%): <input type="number" id="renteFamiliebank" value="5" step="0.01" /></label>
-    <label>Terugschenking ouders (%): <input type="number" id="schenkingProcent" value="33" step="0.1" /></label>
-    <label>Inkomen Cas: <input type="number" id="inkomenCas" value="39000" /></label>
-    <label>Inkomen Jolijn: <input type="number" id="inkomenJolijn" value="29000" /></label>
-    <label>Kosten koper totaal: <input type="number" id="kostenKoper" value="15000" /></label>
-    <label>Studieschuld: <input type="number" id="studieschuld" value="29000" /></label>
-    <label>Eigen geld: <input type="number" id="eigenGeld" value="0" /></label>
-    <label>Overbiedingsklimaat (%): <input type="number" id="overbieding" value="15" /></label>
-  </form>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hypotheekberekening</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="berekening.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body class="bg-gray-50 p-6 text-sm text-gray-800">
 
-  <h3>Tabel 1: Financieringsconstructie</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>Component</th>
-        <th>Bedrag (€)</th>
-      </tr>
-    </thead>
-    <tbody id="constructieTabel"></tbody>
-  </table>
+    <div class="max-w-4xl mx-auto bg-white shadow-md p-6 rounded-md" id="content" style="display: none;">
+      <h1 class="text-2xl font-semibold mb-4">Hypotheekberekening</h1>
 
-  <h3>Tabel 2: Netto maandlasten</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>Component</th>
-        <th>Netto (€ p/m)</th>
-      </tr>
-    </thead>
-    <tbody id="maandlastTabel"></tbody>
-  </table>
-</body>
+      <form id="hypotheekForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <label>Hoogte hypotheek: <input type="number" id="hypotheek" class="input" value="280000" /></label>
+        <label>Rente hypotheek (%): <input type="number" id="renteHypotheek" step="0.01" value="3.8" class="input" /></label>
+        <label>Familiebank 1: <input type="number" id="familiebank1" value="60000" class="input" /></label>
+        <label>Familiebank 2: <input type="number" id="familiebank2" value="65000" class="input" /></label>
+        <label>Rente familiebank (%): <input type="number" id="renteFamiliebank" step="0.01" value="5" class="input" /></label>
+        <label>Terugschenking ouders (%): <input type="number" id="schenkingProcent" step="0.1" value="33" class="input" /></label>
+        <label>Inkomen Cas: <input type="number" id="inkomenCas" value="39000" class="input" /></label>
+        <label>Inkomen Jolijn: <input type="number" id="inkomenJolijn" value="29000" class="input" /></label>
+        <label>Kosten koper totaal: <input type="number" id="kostenKoper" value="15000" class="input" /></label>
+        <label>Studieschuld: <input type="number" id="studieschuld" value="29000" class="input" /></label>
+        <label>Eigen geld: <input type="number" id="eigenGeld" value="0" class="input" /></label>
+        <label>Overbiedingsklimaat (%): <input type="number" id="overbieding" value="15" class="input" /></label>
+      </form>
+
+      <div class="mt-8">
+        <h2 class="text-lg font-semibold mb-2">Tabel 1: Financieringsconstructie</h2>
+        <table class="w-full border text-left text-sm table-auto border-collapse">
+          <thead><tr class="bg-gray-100"><th class="border p-2">Component</th><th class="border p-2">Bedrag (€)</th></tr></thead>
+          <tbody id="constructieTabel"></tbody>
+        </table>
+      </div>
+
+      <div class="mt-8">
+        <h2 class="text-lg font-semibold mb-2">Tabel 2: Maandlasten</h2>
+        <table class="w-full border text-left text-sm table-auto border-collapse">
+          <thead><tr class="bg-gray-100"><th class="border p-2">Component</th><th class="border p-2">Waarde (€ p/m)</th></tr></thead>
+          <tbody id="maandlastTabel"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      const wachtwoord = prompt("Voer toegangscode in:");
+      if (wachtwoord === "eliosam") {
+        document.getElementById("content").style.display = "block";
+      } else {
+        document.body.innerHTML = "<p class='text-center text-red-500 mt-20 text-xl'>Toegang geweigerd.</p>";
+      }
+    </script>
+    <style>
+      .input {
+        width: 100%;
+        padding: 6px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+    </style>
+  </body>
 </html>
