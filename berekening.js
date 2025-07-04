@@ -22,7 +22,8 @@ function updateTables() {
   const fb1 = +form.familiebank1.value || 0;
   const fb2 = +form.familiebank2.value || 0;
   const renteFB = (+form.renteFamiliebank.value || 0) / 100;
-  const schenkingPct = (+form.schenkingProcent.value || 0) / 100;
+  const schenkingJaar = +form.schenkingJaar.value || 0;
+const schenkingMaand = schenkingJaar / 12;
   const inkomenCas = +form.inkomenCas.value || 0;
   const inkomenJolijn = +form.inkomenJolijn.value || 0;
   const kostenKoper = +form.kostenKoper.value || 0;
@@ -50,7 +51,6 @@ function updateTables() {
   const renteAftrek = Math.min(totaleRente, maxAftrek);
 
   // Schenking per maand en jaar
-  const schenkingMaand = familiebankTotaal * renteFB * schenkingPct / 12;
   const schenkingJaar = schenkingMaand * 12;
 
   // Netto maandlasten
