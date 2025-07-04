@@ -50,9 +50,6 @@ const schenkingMaand = schenkingJaar / 12;
   const maxAftrek = (schatBelastingdruk(inkomenCas) + schatBelastingdruk(inkomenJolijn)) / 12 * 0.37;
   const renteAftrek = Math.min(totaleRente, maxAftrek);
 
-  // Schenking per maand en jaar
-  const schenkingJaar = schenkingMaand * 12;
-
   // Netto maandlasten
   const nettoHypotheek = brutoHypotheek - renteHypMaand * (renteAftrek / totaleRente);
   const nettoFamiliebank = brutoFamiliebank - renteFBMaand * (renteAftrek / totaleRente) - schenkingMaand;
