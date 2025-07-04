@@ -76,14 +76,17 @@ function updateTables() {
 
   // === Maandlasten ===
   maandlastTabel.innerHTML = `
-    <tr><td>Hypotheek (bruto)</td><td>€${brutoHypotheek.toFixed(0)}</td></tr>
-    <tr><td>Hypotheek (netto)</td><td>€${nettoHypotheek.toFixed(0)}</td></tr>
-    <tr><td>Familiebank (bruto)</td><td>€${brutoFamiliebank.toFixed(0)}</td></tr>
-    <tr><td>Familiebank (netto)</td><td>€${nettoFamiliebank.toFixed(0)}</td></tr>
-    <tr><td><strong>Schenking ouders</strong></td><td>€${schenkingJaar.toFixed(0)} / jaar<br>€${schenkingMaand.toFixed(0)} / maand</td></tr>
-    <tr><td><strong>Renteaftrek totaal</strong></td><td>–€${renteAftrek.toFixed(0)} p/m</td></tr>
-    <tr class="font-semibold bg-gray-100"><td><strong>Totaal maandlasten</strong></td><td><strong>Bruto: €${brutoTotaal.toFixed(0)}<br>Netto: €${nettoTotaal.toFixed(0)}</strong></td></tr>
-  `;
+  <tr><td>Hypotheek (bruto)</td><td>€${brutoHypotheek.toFixed(0)}</td></tr>
+  <tr><td>Familiebank (bruto)</td><td>€${brutoFamiliebank.toFixed(0)}</td></tr>
+  <tr><td>Renteaftrek totaal</td><td>–€${renteAftrek.toFixed(0)} / maand</td></tr>
+  <tr><td>Schenking ouders</td><td>–€${schenkingMaand.toFixed(0)} / maand <br> (€${schenkingJaar.toFixed(0)} / jaar)</td></tr>
+  <tr class="font-semibold bg-gray-100">
+    <td>Totaal maandlast</td>
+    <td>
+      €${(brutoHypotheek + brutoFamiliebank - renteAftrek - schenkingMaand).toFixed(0)}
+    </td>
+  </tr>
+`;
 }
 
 updateTables();
