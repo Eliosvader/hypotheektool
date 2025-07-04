@@ -32,8 +32,8 @@ const schenkingMaand = schenkingJaar / 12;
   const eigenGeld = +form.eigenGeld.value || 0;
 
   const familiebankTotaal = fb1 + fb2;
-  const totaalFinanciering = hypotheek + familiebankTotaal;
-  const vasteKosten = kostenKoper + studieschuld + eigenGeld;
+  const totaalFinanciering = hypotheek + familiebankTotaal + eigenGeld;
+  const vasteKosten = kostenKoper + studieschuld;
   const nettoFinanciering = totaalFinanciering - vasteKosten;
   const maxBodInclusiefKosten = nettoFinanciering * (1 - overbieding);
 
@@ -58,18 +58,35 @@ const schenkingMaand = schenkingJaar / 12;
 
   // === Constructie ===
   constructieTabel.innerHTML = `
-    <tr><td>Hypotheek</td><td>${hypotheek.toLocaleString()}</td></tr>
-    <tr><td>Familiebank 1</td><td>${fb1.toLocaleString()}</td></tr>
-    <tr><td>Familiebank 2</td><td>${fb2.toLocaleString()}</td></tr>
-    <tr><td>Totaal Familiebank</td><td>${familiebankTotaal.toLocaleString()}</td></tr>
-    <tr><td>Subtotaal Financiering</td><td>${totaalFinanciering.toLocaleString()}</td></tr>
-    <tr><td>Kosten koper</td><td>${kostenKoper.toLocaleString()}</td></tr>
-    <tr><td>Studieschuld</td><td>${studieschuld.toLocaleString()}</td></tr>
-    <tr><td>Eigen geld</td><td>${eigenGeld.toLocaleString()}</td></tr>
-    <tr><td>Totaal vaste kosten</td><td>${vasteKosten.toLocaleString()}</td></tr>
-    <tr><td>Beschikbaar voor woning</td><td>${Math.round(nettoFinanciering)}</td></tr>
-    <tr><td><strong>Max bod (incl. ${Math.round(overbieding * 100)}% overbieding)</strong></td><td><strong>${Math.round(maxBodInclusiefKosten)}</strong></td></tr>
-  `;
+  <tr class="font-semibold bg-gray-100">
+    <td colspan="2">Financieringsbronnen</td>
+  </tr>
+  <tr><td>Hypotheek</td><td>€${hypotheek.toLocaleString()}</td></tr>
+  <tr><td>Familiebank 1</td><td>€${fb1.toLocaleString()}</td></tr>
+  <tr><td>Familiebank 2</td><td>€${fb2.toLocaleString()}</td></tr>
+  <tr><td>Eigen geld</td><td>€${eigenGeld.toLocaleString()}</td></tr>
+  <tr class="font-semibold">
+    <td>Totaal financiering</td><td>€${totaalFinanciering.toLocaleString()}</td>
+  </tr>
+
+  <tr class="font-semibold bg-gray-100">
+    <td colspan="2">Vaste kosten</td>
+  </tr>
+  <tr><td>Kosten koper</td><td>€${kostenKoper.toLocaleString()}</td></tr>
+  <tr><td>Studieschuld</td><td>€${studieschuld.toLocaleString()}</td></tr>
+  <tr class="font-semibold">
+    <td>Totaal vaste kosten</td><td>€${vasteKosten.toLocaleString()}</td>
+  </tr>
+
+  <tr class="font-semibold bg-gray-100">
+    <td colspan="2">Rekenruimte voor woning</td>
+  </tr>
+  <tr><td>Beschikbaar voor woning (na kosten)</td><td>€${Math.round(nettoFinanciering)}</td></tr>
+  <tr>
+    <td><strong>Max bod (incl. ${Math.round(overbieding * 100)}% overbieding)</strong></td>
+    <td><strong>€${Math.round(maxBodInclusiefKosten)}</strong></td>
+  </tr>
+`;
 
   // === Maandlasten ===
   maandlastTabel.innerHTML = `
