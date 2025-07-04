@@ -6,10 +6,28 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="berekening.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      .input {
+        width: 100%;
+        padding: 6px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+    </style>
   </head>
-  <body class="bg-gray-50 p-6 text-sm text-gray-800">
+  <body class="bg-gray-50 text-sm text-gray-800">
 
-    <div class="max-w-4xl mx-auto bg-white shadow-md p-6 rounded-md" id="content" style="display: none;">
+    <div id="login" class="flex items-center justify-center min-h-screen">
+      <div class="bg-white p-6 rounded shadow-md w-full max-w-sm">
+        <h1 class="text-xl font-semibold mb-4">Toegang</h1>
+        <label class="block mb-2">Toegangscode:</label>
+        <input type="password" id="passwordInput" class="input mb-4" />
+        <button onclick="checkPassword()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full">Verder</button>
+        <p id="errorMessage" class="text-red-500 mt-2 hidden">Onjuiste code.</p>
+      </div>
+    </div>
+
+    <div id="content" class="max-w-4xl mx-auto bg-white shadow-md p-6 rounded-md hidden">
       <h1 class="text-2xl font-semibold mb-4">Hypotheekberekening</h1>
 
       <form id="hypotheekForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -38,27 +56,23 @@
       <div class="mt-8">
         <h2 class="text-lg font-semibold mb-2">Tabel 2: Maandlasten</h2>
         <table class="w-full border text-left text-sm table-auto border-collapse">
-          <thead><tr class="bg-gray-100"><th class="border p-2">Component</th><th class="border p-2">Waarde (€ p/m)</th></tr></thead>
+          <thead><tr class="bg-gray-100"><th class="border p-2">Omschrijving</th><th class="border p-2">Bedrag</th></tr></thead>
           <tbody id="maandlastTabel"></tbody>
         </table>
       </div>
     </div>
 
     <script>
-      const wachtwoord = prompt("Voer toegangscode in:");
-      if (wachtwoord === "eliosam") {
-        document.getElementById("content").style.display = "block";
-      } else {
-        document.body.innerHTML = "<p class='text-center text-red-500 mt-20 text-xl'>Toegang geweigerd.</p>";
+      function checkPassword() {
+        const input = document.getElementById("passwordInput").value;
+        const error = document.getElementById("errorMessage");
+        if (input === "eliosam") {
+          document.getElementById("login").style.display = "none";
+          document.getElementById("content").classList.remove("hidden");
+        } else {
+          error.classList.remove("hidden");
+        }
       }
     </script>
-    <style>
-      .input {
-        width: 100%;
-        padding: 6px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-      }
-    </style>
   </body>
 </html>
