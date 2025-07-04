@@ -36,20 +36,27 @@ function updateTables() {
   const nettoFinanciering = totaalFinanciering - vasteKosten;
   const maxBodInclusiefKosten = nettoFinanciering * (1 - overbieding);
 
+  // Bruto maandlasten
   const brutoHypotheek = hypotheek * 0.0054 * renteHypotheek / 0.038;
   const brutoFamiliebank = familiebankTotaal * 0.0054 * renteFB / 0.05;
 
+  // Rente maand
   const renteHypMaand = hypotheek * renteHypotheek / 12;
   const renteFBMaand = familiebankTotaal * renteFB / 12;
-  const aftrekCas = Math.min((renteHypMaand + renteFBMaand) / 2, schatBelastingdruk(inkomenCas) / 12) * 0.37;
-  const aftrekJolijn = Math.min((renteHypMaand + renteFBMaand) / 2, schatBelastingdruk(inkomenJolijn) / 12) * 0.37;
-  const totaleRenteAftrek = aftrekCas + aftrekJolijn;
+  const totaleRente = renteHypMaand + renteFBMaand;
+
+  // Aftrekcapaciteit op basis van belastingdruk
+  const maxAftrek = (schatBelastingdruk(inkomenCas) + schatBelastingdruk(inkomenJolijn)) / 12 * 0.37;
+  const renteAftrek = Math.min(totaleRente, maxAftrek);
+
   const schenkingMaand = familiebankTotaal * renteFB * schenkingPct / 12;
 
-  const nettoHypotheek = brutoHypotheek - renteHypMaand * 0.37;
-  const nettoFamiliebank = brutoFamiliebank - renteFBMaand * 0.37 - schenkingMaand;
+  // Netto maandlasten
+  const nettoHypotheek = brutoHypotheek - renteHypMaand * (renteAftrek / totaleRente);
+  const nettoFamiliebank = brutoFamiliebank - renteFBMaand * (renteAftrek / totaleRente) - schenkingMaand;
   const nettoTotaal = nettoHypotheek + nettoFamiliebank;
 
+  // Constructie-tabel
   constructieTabel.innerHTML = `
     <tr><td>Hypotheek</td><td>${hypotheek.toLocaleString()}</td></tr>
     <tr><td>Familiebank 1</td><td>${fb1.toLocaleString()}</td></tr>
@@ -60,16 +67,20 @@ function updateTables() {
     <tr><td>Studieschuld</td><td>${studieschuld.toLocaleString()}</td></tr>
     <tr><td>Eigen geld</td><td>${eigenGeld.toLocaleString()}</td></tr>
     <tr><td>Totaal vaste kosten</td><td>${vasteKosten.toLocaleString()}</td></tr>
-    <tr><td>Beschikbaar voor woning (na kosten)</td><td>${Math.round(nettoFinanciering)}</td></tr>
+    <tr><td>Beschikbaar voor woning</td><td>${Math.round(nettoFinanciering)}</td></tr>
     <tr><td><strong>Max bod (incl. ${Math.round(overbieding * 100)}% overbieding)</strong></td><td><strong>${Math.round(maxBodInclusiefKosten)}</strong></td></tr>
   `;
 
+  // Maandlasten-tabel (bruto & netto onder elkaar)
   maandlastTabel.innerHTML = `
+    <tr><td>Hypotheek (bruto)</td><td>€${brutoHypotheek.toFixed(0)}</td></tr>
     <tr><td>Hypotheek (netto)</td><td>€${nettoHypotheek.toFixed(0)}</td></tr>
+    <tr><td>Familiebank (bruto)</td><td>€${brutoFamiliebank.toFixed(0)}</td></tr>
     <tr><td>Familiebank (netto)</td><td>€${nettoFamiliebank.toFixed(0)}</td></tr>
-    <tr><td>Renteaftrek (totaal)</td><td>–€${totaleRenteAftrek.toFixed(0)} p/m (Cas: €${aftrekCas.toFixed(0)}, Jolijn: €${aftrekJolijn.toFixed(0)})</td></tr>
-    <tr><td><strong>Totaal netto maandlast</strong></td><td><strong>€${nettoTotaal.toFixed(0)}</strong></td></tr>
+    <tr><td>Renteaftrek (totaal)</td><td>–€${renteAftrek.toFixed(0)} p/m</td></tr>
+    <tr><td>Schenking ouders</td><td>–€${schenkingMaand.toFixed(0)} p/m</td></tr>
+    <tr class="font-semibold bg-gray-100"><td>Totaal netto maandlast</td><td>€${nettoTotaal.toFixed(0)}</td></tr>
   `;
 }
 
-updateTables(); // run bij laden
+updateTables();
