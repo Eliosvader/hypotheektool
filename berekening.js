@@ -58,16 +58,7 @@ const brutoFamiliebank = berekenAnnuiteit(familiebankTotaal, renteFB);
   // Netto maandlasten
   const nettoHypotheek = brutoHypotheek - renteHypMaand * (renteAftrek / totaleRente);
   const nettoFamiliebank = brutoFamiliebank - renteFBMaand * (renteAftrek / totaleRente) - schenkingMaand;
-  // Rentecomponent per maand (eerste maand, annuïtair)
-const renteHypMaand = hypotheek * renteHypotheek / 12;
-const renteFBMaand = familiebankTotaal * renteFB / 12;
-
-// Totale rente eerste maand
-const totaleRente = renteHypMaand + renteFBMaand;
-
-// Belastingvoordeel
-const maxAftrek = (schatBelastingdruk(inkomenCas) + schatBelastingdruk(inkomenJolijn)) / 12 * 0.37;
-const renteAftrek = Math.min(totaleRente, maxAftrek);
+  
 
 // Netto maandlasten
 const nettoTotaal = brutoHypotheek + brutoFamiliebank - renteAftrek - schenkingMaand;
@@ -98,10 +89,10 @@ const nettoTotaal = brutoHypotheek + brutoFamiliebank - renteAftrek - schenkingM
   <tr class="font-semibold bg-gray-100">
     <td colspan="2">Rekenruimte voor woning</td>
   </tr>
-  <tr><td>Beschikbaar voor woning</td><td>${Math.round(nettoFinanciering)}</td></tr>
+  <tr><td>Maximale woningprijs (zonder overbieden)</td><td>€${Math.round(maxBodInclusiefKosten)}</td></tr>
 <tr>
-  <td><strong>Max bod (incl. ${Math.round(overbieding * 100)}% overbieding)</strong></td>
-  <td><strong>€${Math.round(maxBodInclusiefKosten)}</strong></td>
+  <td><strong>Maximale vraagprijs (bij ${Math.round(overbieding * 100)}% overbieden)</strong></td>
+  <td><strong>€${Math.round(nettoFinanciering)}</strong></td>
 </tr>
 `;
 
