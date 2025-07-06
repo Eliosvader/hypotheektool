@@ -4,6 +4,12 @@ const maandlastTabel = document.getElementById("maandlastTabel");
 
 form.oninput = updateTables;
 
+function berekenAnnuiteit(lening, renteJaar, looptijdJaar = 30) {
+  const n = looptijdJaar * 12;
+  const r = renteJaar / 12;
+  return lening * (r / (1 - Math.pow(1 + r, -n)));
+}
+
 function schatBelastingdruk(inkomen) {
   const zelfstandigenaftrek = 3750;
   const mkbVrijstelling = 0.1331;
@@ -38,9 +44,8 @@ const schenkingMaand = schenkingJaar / 12;
   const maxBodInclusiefKosten = nettoFinanciering * (1 - overbieding);
 
   // Maandlasten bruto
-  const brutoHypotheek = hypotheek * 0.0054 * renteHypotheek / 0.038;
-  const brutoFamiliebank = familiebankTotaal * 0.0054 * renteFB / 0.05;
-
+  const brutoHypotheek = berekenAnnuiteit(hypotheek, renteHypotheek);
+const brutoFamiliebank = berekenAnnuiteit(familiebankTotaal, renteFB);
   // Maandelijks rentebedrag
   const renteHypMaand = hypotheek * renteHypotheek / 12;
   const renteFBMaand = familiebankTotaal * renteFB / 12;
@@ -53,7 +58,19 @@ const schenkingMaand = schenkingJaar / 12;
   // Netto maandlasten
   const nettoHypotheek = brutoHypotheek - renteHypMaand * (renteAftrek / totaleRente);
   const nettoFamiliebank = brutoFamiliebank - renteFBMaand * (renteAftrek / totaleRente) - schenkingMaand;
-  const nettoTotaal = nettoHypotheek + nettoFamiliebank;
+  // Rentecomponent per maand (eerste maand, annuïtair)
+const renteHypMaand = hypotheek * renteHypotheek / 12;
+const renteFBMaand = familiebankTotaal * renteFB / 12;
+
+// Totale rente eerste maand
+const totaleRente = renteHypMaand + renteFBMaand;
+
+// Belastingvoordeel
+const maxAftrek = (schatBelastingdruk(inkomenCas) + schatBelastingdruk(inkomenJolijn)) / 12 * 0.37;
+const renteAftrek = Math.min(totaleRente, maxAftrek);
+
+// Netto maandlasten
+const nettoTotaal = brutoHypotheek + brutoFamiliebank - renteAftrek - schenkingMaand;
   const brutoTotaal = brutoHypotheek + brutoFamiliebank;
 
   // === Constructie ===
@@ -96,9 +113,7 @@ const schenkingMaand = schenkingJaar / 12;
   <tr><td>Schenking ouders</td><td>–€${schenkingMaand.toFixed(0)} / maand <br> (€${schenkingJaar.toFixed(0)} / jaar)</td></tr>
   <tr class="font-semibold bg-gray-100">
     <td>Totaal maandlast</td>
-    <td>
-      €${(brutoHypotheek + brutoFamiliebank - renteAftrek - schenkingMaand).toFixed(0)}
-    </td>
+    <td>€${nettoTotaal.toFixed(0)}</td>
   </tr>
 `;
 }
