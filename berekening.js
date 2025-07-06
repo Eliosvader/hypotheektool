@@ -98,10 +98,10 @@ const nettoTotaal = brutoHypotheek + brutoFamiliebank - renteAftrek - schenkingM
   <tr class="font-semibold bg-gray-100">
     <td colspan="2">Rekenruimte voor woning</td>
   </tr>
-  <tr><td>Maximale woningprijs (zonder overbieden)</td><td>€${Math.round(maxBodInclusiefKosten)}</td></tr>
+  <tr><td>Beschikbaar voor woning</td><td>${Math.round(nettoFinanciering)}</td></tr>
 <tr>
-  <td><strong>Maximale vraagprijs (bij ${Math.round(overbieding * 100)}% overbieden)</strong></td>
-  <td><strong>€${Math.round(nettoFinanciering)}</strong></td>
+  <td><strong>Max bod (incl. ${Math.round(overbieding * 100)}% overbieding)</strong></td>
+  <td><strong>€${Math.round(maxBodInclusiefKosten)}</strong></td>
 </tr>
 `;
 
