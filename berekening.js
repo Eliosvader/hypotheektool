@@ -56,26 +56,42 @@ function updateTables() {
   const studieschuld = +form.studieschuld.value || 0;
   const overbieding = (+form.overbieding.value || 0) / 100;
   const eigenGeld = +form.eigenGeld.value || 0;
+  const labelBonus = {
+    "G": 0,
+    "F": 0,
+    "E": 0,
+    "D": 5000,
+    "C": 5000,
+    "B": 10000,
+    "A": 10000,
+    "A+": 20000,
+    "A++": 20000,
+    "A+++": 30000,
+    "A++++": 40000,
+  };
+
+  const label = form.energielabel.value;
+  const extraLening = labelBonus[label] || 0;
+  const hypotheekPlusExtraLening = hypotheek + extraLening;
 
   const familiebankTotaal = fb1 + fb2;
-  const totaalFinanciering = hypotheek + familiebankTotaal + eigenGeld;
+  const totaalFinanciering = hypotheekPlusExtraLening + familiebankTotaal + eigenGeld;
   const vasteKosten = kostenKoper + studieschuld;
   const nettoFinanciering = totaalFinanciering - vasteKosten;
   const maxBodInclusiefKosten = nettoFinanciering * (1 - overbieding);
 
   // Maandlasten bruto
-  const brutoHypotheek = berekenAnnuiteit(hypotheek, renteHypotheek);
+  const brutoHypotheek = berekenAnnuiteit(hypotheekPlusExtraLening, renteHypotheek);
   const brutoFamiliebank = berekenAnnuiteit(familiebankTotaal, renteFB);
+
   // Maandelijks rentebedrag
-  const renteHypMaand = hypotheek * renteHypotheek / 12;
+  const renteHypMaand = hypotheekPlusExtraLening * renteHypotheek / 12;
   const renteFBMaand = familiebankTotaal * renteFB / 12;
   const totaleRente = renteHypMaand + renteFBMaand;
 
   // Belastingvoordeel (aftrekcapaciteit)
   const maxAftrek = (schatBelastingdruk(inkomenCas) + schatBelastingdruk(inkomenJolijn)) / 12 * 0.37;
   const renteAftrek = Math.min(totaleRente, maxAftrek);
-
-  // Netto maandlasten
 
   // Netto maandlasten
   const nettoTotaal = brutoHypotheek + brutoFamiliebank - renteAftrek - schenkingMaand;
@@ -86,10 +102,11 @@ function updateTables() {
   <tr class="border-2 border-black font-bold uppercase">
     <td colspan="2" class="p-2 border-2 border-black">Financieringsbronnen</td>
   </tr>
-  <tr><td class="border-2 border-black p-2">Hypotheek</td><td class="border-2 border-black p-2">€${hypotheek.toLocaleString()}</td></tr>
+  <tr><td class="border-2 border-black p-2">Hypotheek plus extra lening energielabel (€${extraLening})</td><td class="border-2 border-black p-2">€${(hypotheekPlusExtraLening).toLocaleString()}</td></tr>
   <tr><td class="border-2 border-black p-2">Familiebank 1</td><td class="border-2 border-black p-2">€${fb1.toLocaleString()}</td></tr>
   <tr><td class="border-2 border-black p-2">Familiebank 2</td><td class="border-2 border-black p-2">€${fb2.toLocaleString()}</td></tr>
   <tr><td class="border-2 border-black p-2">Eigen geld</td><td class="border-2 border-black p-2">€${eigenGeld.toLocaleString()}</td></tr>
+
   <tr class="bg-black text-yellow-300 font-bold">
     <td class="border-2 border-black p-2">Totaal financiering</td><td class="border-2 border-black p-2">€${totaalFinanciering.toLocaleString()}</td>
   </tr>
