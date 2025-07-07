@@ -54,8 +54,6 @@ function berekenArbeidsKorting(inkomen) {
   }
 }
 
-
-
 function berekenInkomstenbelasting(belastbaar) {
   const drempel1 = 38441;
   const drempel2 = 76817;
@@ -157,7 +155,6 @@ function updateTables() {
 
   // Netto maandlasten
   const nettoTotaal = brutoHypotheek + brutoFamiliebank - renteAftrek - schenkingMaand;
-
 
   // === Constructie ===
   constructieTabel.innerHTML = `
