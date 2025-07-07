@@ -29,7 +29,7 @@ function updateTables() {
   const fb2 = +form.familiebank2.value || 0;
   const renteFB = (+form.renteFamiliebank.value || 0) / 100;
   const schenkingJaar = +form.schenkingJaar.value || 0;
-const schenkingMaand = schenkingJaar / 12;
+  const schenkingMaand = schenkingJaar / 12;
   const inkomenCas = +form.inkomenCas.value || 0;
   const inkomenJolijn = +form.inkomenJolijn.value || 0;
   const kostenKoper = +form.kostenKoper.value || 0;
@@ -45,7 +45,7 @@ const schenkingMaand = schenkingJaar / 12;
 
   // Maandlasten bruto
   const brutoHypotheek = berekenAnnuiteit(hypotheek, renteHypotheek);
-const brutoFamiliebank = berekenAnnuiteit(familiebankTotaal, renteFB);
+  const brutoFamiliebank = berekenAnnuiteit(familiebankTotaal, renteFB);
   // Maandelijks rentebedrag
   const renteHypMaand = hypotheek * renteHypotheek / 12;
   const renteFBMaand = familiebankTotaal * renteFB / 12;
