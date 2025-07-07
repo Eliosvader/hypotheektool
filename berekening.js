@@ -30,16 +30,78 @@ function berekenAnnuiteit(lening, renteJaar, looptijdJaar = 30) {
   return lening * (r / (1 - Math.pow(1 + r, -n)));
 }
 
-function schatBelastingdruk(inkomen) {
-  const zelfstandigenaftrek = 3750;
-  const mkbVrijstelling = 0.1331;
-  const algemeneKorting = 3000;
-  const arbeidskorting = Math.max(0, Math.min(5000, inkomen * 0.15));
+function berekenAlgemeneKorting(inkomen) {
+  if (inkomen <= 25000) {
+    return 3068;
+  } else if (inkomen < 75000) {
+    return 3068 - ((inkomen - 25000) * 0.0663);
+  } else {
+    return 0;
+  }
+}
+
+function berekenArbeidsKorting(inkomen) {
+  if (inkomen <= 12169) {
+    return inkomen * 0.08053;
+  } else if (inkomen <= 26288) {
+    return 980 + (inkomen - 12169) * 0.30030;
+  } else if (inkomen <= 43071) {
+    return 5220 + (inkomen - 26288) * 0.02258;
+  } else if (inkomen <= 129078) {
+    return 5599 - (inkomen - 43071) * 0.06510;
+  } else {
+    return 0;
+  }
+}
+
+
+
+function berekenInkomstenbelasting(belastbaar) {
+  const drempel1 = 38441;
+  const drempel2 = 76817;
+  const tarief1 = 0.3582;
+  const tarief2 = 0.3748;
+  const tarief3 = 0.495;
+
+  if (belastbaar <= drempel1) {
+    return belastbaar * tarief1;
+  } else if (belastbaar <= drempel2) {
+    return drempel1 * tarief1 + (belastbaar - drempel1) * tarief2;
+  } else {
+    return (
+      drempel1 * tarief1 +
+      (drempel2 - drempel1) * tarief2 +
+      (belastbaar - drempel2) * tarief3
+    );
+  }
+}
+
+
+function berekenZvw(inkomen) {
+  const zvwGrens = 71628;
+  const zvwTarief = 0.0532;
+  return Math.min(inkomen, zvwGrens) * zvwTarief;
+}
+
+function schatBelastingdruk(inkomen, cas) {
+  const zelfstandigenaftrek = 2470;
+  const mkbVrijstelling = 0.127;
+  // Stap 1: belastbaar inkomen berekenen
   const belastbaar = Math.max(0, inkomen - zelfstandigenaftrek);
   const belastbaarNaMkb = belastbaar * (1 - mkbVrijstelling);
-  const belasting = belastbaarNaMkb * 0.3697;
-  const korting = Math.min(algemeneKorting + arbeidskorting, belasting);
-  return Math.max(0, belasting - korting);
+
+  // Stap 2: inkomstenbelasting schijf 1 (tot € 75.000: 36,97%)
+  const inkomstenbelasting = berekenInkomstenbelasting(belastbaarNaMkb);
+
+  // Stap 3: Algemene heffingskorting 2025
+  const algemeneKorting = berekenAlgemeneKorting(inkomen);
+  // Stap 4: Arbeidskorting 2025
+  const arbeidskorting = berekenArbeidsKorting(inkomen);
+
+  // Stap 5: Totaal aan korting toepassen op belasting
+  const totaalKorting = Math.max(0, algemeneKorting) + Math.max(0, arbeidskorting);
+  const zvw = berekenZvw(belastbaarNaMkb);
+  return Math.max(0, inkomstenbelasting - totaalKorting + zvw);
 }
 
 function updateTables() {
@@ -90,7 +152,7 @@ function updateTables() {
   const totaleRente = renteHypMaand + renteFBMaand;
 
   // Belastingvoordeel (aftrekcapaciteit)
-  const maxAftrek = (schatBelastingdruk(inkomenCas) + schatBelastingdruk(inkomenJolijn)) / 12 * 0.37;
+  const maxAftrek = (schatBelastingdruk(inkomenCas, 'cas') + schatBelastingdruk(inkomenJolijn)) / 12 * 0.37;
   const renteAftrek = Math.min(totaleRente, maxAftrek);
 
   // Netto maandlasten
