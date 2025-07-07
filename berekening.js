@@ -4,6 +4,26 @@ const maandlastTabel = document.getElementById("maandlastTabel");
 
 form.oninput = updateTables;
 
+document.addEventListener("DOMContentLoaded", () => {
+  if (sessionStorage.getItem("loginSuccess") === "true") {
+    document.getElementById("login").style.display = "none";
+    document.getElementById("content").classList.remove("hidden");
+  }
+});
+
+function checkPassword() {
+  const input = document.getElementById("passwordInput").value;
+  const error = document.getElementById("errorMessage");
+
+  if (input === "eliosam") {
+    sessionStorage.setItem("loginSuccess", "true");
+    document.getElementById("login").style.display = "none";
+    document.getElementById("content").classList.remove("hidden");
+  } else {
+    error.classList.remove("hidden");
+  }
+}
+
 function berekenAnnuiteit(lening, renteJaar, looptijdJaar = 30) {
   const n = looptijdJaar * 12;
   const r = renteJaar / 12;
@@ -56,57 +76,54 @@ function updateTables() {
   const renteAftrek = Math.min(totaleRente, maxAftrek);
 
   // Netto maandlasten
-  const nettoHypotheek = brutoHypotheek - renteHypMaand * (renteAftrek / totaleRente);
-  const nettoFamiliebank = brutoFamiliebank - renteFBMaand * (renteAftrek / totaleRente) - schenkingMaand;
-  
 
-// Netto maandlasten
-const nettoTotaal = brutoHypotheek + brutoFamiliebank - renteAftrek - schenkingMaand;
-  const brutoTotaal = brutoHypotheek + brutoFamiliebank;
+  // Netto maandlasten
+  const nettoTotaal = brutoHypotheek + brutoFamiliebank - renteAftrek - schenkingMaand;
+
 
   // === Constructie ===
   constructieTabel.innerHTML = `
-  <tr class="font-semibold bg-gray-100">
-    <td colspan="2">Financieringsbronnen</td>
+  <tr class="border-2 border-black font-bold uppercase">
+    <td colspan="2" class="p-2 border-2 border-black">Financieringsbronnen</td>
   </tr>
-  <tr><td>Hypotheek</td><td>€${hypotheek.toLocaleString()}</td></tr>
-  <tr><td>Familiebank 1</td><td>€${fb1.toLocaleString()}</td></tr>
-  <tr><td>Familiebank 2</td><td>€${fb2.toLocaleString()}</td></tr>
-  <tr><td>Eigen geld</td><td>€${eigenGeld.toLocaleString()}</td></tr>
-  <tr class="font-semibold">
-    <td>Totaal financiering</td><td>€${totaalFinanciering.toLocaleString()}</td>
-  </tr>
-
-  <tr class="font-semibold bg-gray-100">
-    <td colspan="2">Vaste kosten</td>
-  </tr>
-  <tr><td>Kosten koper</td><td>€${kostenKoper.toLocaleString()}</td></tr>
-  <tr><td>Studieschuld</td><td>€${studieschuld.toLocaleString()}</td></tr>
-  <tr class="font-semibold">
-    <td>Totaal vaste kosten</td><td>€${vasteKosten.toLocaleString()}</td>
+  <tr><td class="border-2 border-black p-2">Hypotheek</td><td class="border-2 border-black p-2">€${hypotheek.toLocaleString()}</td></tr>
+  <tr><td class="border-2 border-black p-2">Familiebank 1</td><td class="border-2 border-black p-2">€${fb1.toLocaleString()}</td></tr>
+  <tr><td class="border-2 border-black p-2">Familiebank 2</td><td class="border-2 border-black p-2">€${fb2.toLocaleString()}</td></tr>
+  <tr><td class="border-2 border-black p-2">Eigen geld</td><td class="border-2 border-black p-2">€${eigenGeld.toLocaleString()}</td></tr>
+  <tr class="bg-black text-yellow-300 font-bold">
+    <td class="border-2 border-black p-2">Totaal financiering</td><td class="border-2 border-black p-2">€${totaalFinanciering.toLocaleString()}</td>
   </tr>
 
-  <tr class="font-semibold bg-gray-100">
-    <td colspan="2">Rekenruimte voor woning</td>
+  <tr class="border-2 border-black font-bold uppercase">
+    <td colspan="2" class="p-2 border-2 border-black">Vaste kosten</td>
   </tr>
-  <tr><td>Maximale woningprijs (zonder overbieden)</td><td>€${Math.round(maxBodInclusiefKosten)}</td></tr>
-<tr>
-  <td><strong>Maximale vraagprijs (bij ${Math.round(overbieding * 100)}% overbieden)</strong></td>
-  <td><strong>€${Math.round(nettoFinanciering)}</strong></td>
-</tr>
+  <tr><td class="border-2 border-black p-2">Kosten koper</td><td class="border-2 border-black p-2">€${kostenKoper.toLocaleString()}</td></tr>
+  <tr><td class="border-2 border-black p-2">Studieschuld</td><td class="border-2 border-black p-2">€${studieschuld.toLocaleString()}</td></tr>
+  <tr class="bg-black text-yellow-300 font-bold">
+    <td class="border-2 border-black p-2">Totaal vaste kosten</td><td class="border-2 border-black p-2">€${vasteKosten.toLocaleString()}</td>
+  </tr>
+
+  <tr class="border-2 border-black font-bold uppercase">
+    <td colspan="2" class="p-2 border-2 border-black">Rekenruimte voor woning</td>
+  </tr>
+  <tr><td class="border-2 border-black p-2">Maximale woningprijs (zonder overbieden)</td><td class="border-2 border-black p-2">€${Math.round(maxBodInclusiefKosten)}</td></tr>
+  <tr class="bg-black text-yellow-300 font-bold">
+    <td class="border-2 border-black p-2">Maximale prijs om te kunnen bieden (bij ${Math.round(overbieding * 100)}% overbieden)</td>
+    <td class="border-2 border-black p-2">€${Math.round(nettoFinanciering)}</td>
+  </tr>
 `;
 
-  // === Maandlasten ===
   maandlastTabel.innerHTML = `
-  <tr><td>Hypotheek (bruto)</td><td>€${brutoHypotheek.toFixed(0)}</td></tr>
-  <tr><td>Familiebank (bruto)</td><td>€${brutoFamiliebank.toFixed(0)}</td></tr>
-  <tr><td>Renteaftrek totaal</td><td>–€${renteAftrek.toFixed(0)} / maand</td></tr>
-  <tr><td>Schenking ouders</td><td>–€${schenkingMaand.toFixed(0)} / maand <br> (€${schenkingJaar.toFixed(0)} / jaar)</td></tr>
-  <tr class="font-semibold bg-gray-100">
-    <td>Totaal maandlast</td>
-    <td>€${nettoTotaal.toFixed(0)}</td>
+  <tr><td class="border-2 border-black p-2">Hypotheek (bruto)</td><td class="border-2 border-black p-2">€${brutoHypotheek.toFixed(0)}</td></tr>
+  <tr><td class="border-2 border-black p-2">Familiebank (bruto)</td><td class="border-2 border-black p-2">€${brutoFamiliebank.toFixed(0)}</td></tr>
+  <tr><td class="border-2 border-black p-2">Renteaftrek totaal</td><td class="border-2 border-black p-2">–€${renteAftrek.toFixed(0)} / maand</td></tr>
+  <tr><td class="border-2 border-black p-2">Schenking ouders</td><td class="border-2 border-black p-2">–€${schenkingMaand.toFixed(0)} / maand<br>(€${schenkingJaar.toFixed(0)} / jaar)</td></tr>
+  <tr class="bg-black text-yellow-300 font-bold">
+    <td class="border-2 border-black p-2">Totaal maandlast</td>
+    <td class="border-2 border-black p-2">€${nettoTotaal.toFixed(0)}</td>
   </tr>
 `;
+
 }
 
 updateTables();

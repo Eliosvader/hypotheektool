@@ -1,78 +1,87 @@
 <!DOCTYPE html>
 <html lang="nl">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Hypotheekberekening</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="berekening.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-      .input {
-        width: 100%;
-        padding: 6px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-      }
-    </style>
-  </head>
-  <body class="bg-gray-50 text-sm text-gray-800">
 
-    <div id="login" class="flex items-center justify-center min-h-screen">
-      <div class="bg-white p-6 rounded shadow-md w-full max-w-sm">
-        <h1 class="text-xl font-semibold mb-4">Toegang</h1>
-        <label class="block mb-2">Toegangscode:</label>
-        <input type="password" id="passwordInput" class="input mb-4" />
-        <button onclick="checkPassword()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full">Verder</button>
-        <p id="errorMessage" class="text-red-500 mt-2 hidden">Onjuiste code.</p>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <title>Hypotheekberekening</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="berekening.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body class="bg-yellow-50 text-black font-mono">
+
+  <div id="login" class="flex items-center justify-center min-h-screen bg-pink-200">
+    <div class="bg-white p-8 shadow-[8px_8px_0px_0px_black] border-2 border-black w-full max-w-sm">
+      <h1 class="text-3xl font-bold mb-6 uppercase tracking-wider">Toegang</h1>
+      <label class="block mb-2 text-black font-bold">Toegangscode:</label>
+      <input type="password" id="passwordInput"
+        class="w-full mb-2 p-2 border-2 border-black bg-white text-black text-base" />
+      <button onclick="checkPassword()"
+        class="bg-black text-bold text-yellow-300 hover:bg-yellow-300 hover:text-black border-2 border-black px-4 py-2 w-full uppercase">Verder</button>
+      <p id="errorMessage" class="text-red-600 mt-2 hidden font-bold">Onjuiste code.</p>
+    </div>
+  </div>
+
+  <div id="content"
+    class="max-w-5xl mt-5 mb-5 mx-auto bg-white shadow-[10px_10px_0px_0px_black] border-2 border-black p-10 hidden">
+    <h1 class="text-4xl font-bold mb-8 uppercase tracking-widest">Hypotheekberekening</h1>
+
+    <form id="hypotheekForm" class="grid grid-cols-1 md:grid-cols-2 gap-6 text-base">
+      <label class="font-bold uppercase">Hoogte hypotheek: <input type="number" id="hypotheek"
+          class="w-full p-2 border-2 border-black bg-white text-black text-base" value="280000" /></label>
+      <label class="font-bold uppercase">Rente hypotheek (%): <input type="number" id="renteHypotheek" step="0.01"
+          value="3.8" class="w-full p-2 border-2 border-black bg-white text-black text-base" /></label>
+      <label class="font-bold uppercase">Familiebank 1: <input type="number" id="familiebank1" value="60000"
+          class="w-full p-2 border-2 border-black bg-white text-black text-base" /></label>
+      <label class="font-bold uppercase">Familiebank 2: <input type="number" id="familiebank2" value="65000"
+          class="w-full p-2 border-2 border-black bg-white text-black text-base" /></label>
+      <label class="font-bold uppercase">Rente familiebank (%): <input type="number" id="renteFamiliebank" step="0.01"
+          value="5" class="w-full p-2 border-2 border-black bg-white text-black text-base" /></label>
+      <label class="font-bold uppercase">Schenking ouders p/j: <input type="number" id="schenkingJaar" value="1200"
+          class="w-full p-2 border-2 border-black bg-white text-black text-base" /></label>
+      <label class="font-bold uppercase">Inkomen Cas: <input type="number" id="inkomenCas" value="39000"
+          class="w-full p-2 border-2 border-black bg-white text-black text-base" /></label>
+      <label class="font-bold uppercase">Inkomen Jolijn: <input type="number" id="inkomenJolijn" value="29000"
+          class="w-full p-2 border-2 border-black bg-white text-black text-base" /></label>
+      <label class="font-bold uppercase">Kosten koper totaal: <input type="number" id="kostenKoper" value="15000"
+          class="w-full p-2 border-2 border-black bg-white text-black text-base" /></label>
+      <label class="font-bold uppercase">Studieschuld: <input type="number" id="studieschuld" value="29000"
+          class="w-full p-2 border-2 border-black bg-white text-black text-base" /></label>
+      <label class="font-bold uppercase">Eigen geld: <input type="number" id="eigenGeld" value="0"
+          class="w-full p-2 border-2 border-black bg-white text-black text-base" /></label>
+      <label class="font-bold uppercase">Overbieding (%): <input type="number" id="overbieding" value="15"
+          class="w-full p-2 border-2 border-black bg-white text-black text-base" /></label>
+    </form>
+
+    <div class="mt-12">
+      <h2 class="text-2xl font-extrabold uppercase mb-4 bg-yellow-300 inline-block px-2 border-2 border-black">Tabel 1:
+        Financiering</h2>
+      <table class="w-full border-2 border-black text-base">
+        <thead class="bg-black text-white">
+          <tr>
+            <th class="border-2 border-black p-2 uppercase">Component</th>
+            <th class="border-2 border-black p-2 uppercase">Bedrag (€)</th>
+          </tr>
+        </thead>
+        <tbody id="constructieTabel" class="bg-white"></tbody>
+      </table>
     </div>
 
-    <div id="content" class="max-w-4xl mx-auto bg-white shadow-md p-6 rounded-md hidden">
-      <h1 class="text-2xl font-semibold mb-4">Hypotheekberekening</h1>
-
-      <form id="hypotheekForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <label>Hoogte hypotheek: <input type="number" id="hypotheek" class="input" value="280000" /></label>
-        <label>Rente hypotheek (%): <input type="number" id="renteHypotheek" step="0.01" value="3.8" class="input" /></label>
-        <label>Familiebank 1: <input type="number" id="familiebank1" value="60000" class="input" /></label>
-        <label>Familiebank 2: <input type="number" id="familiebank2" value="65000" class="input" /></label>
-        <label>Rente familiebank (%): <input type="number" id="renteFamiliebank" step="0.01" value="5" class="input" /></label>
-        <label>Terugschenking ouders (€ per jaar): <input type="number" id="schenkingJaar" value="1200" class="input" /></label>
-        <label>Inkomen Cas: <input type="number" id="inkomenCas" value="39000" class="input" /></label>
-        <label>Inkomen Jolijn: <input type="number" id="inkomenJolijn" value="29000" class="input" /></label>
-        <label>Kosten koper totaal: <input type="number" id="kostenKoper" value="15000" class="input" /></label>
-        <label>Studieschuld: <input type="number" id="studieschuld" value="29000" class="input" /></label>
-        <label>Eigen geld: <input type="number" id="eigenGeld" value="0" class="input" /></label>
-        <label>Overbiedingsklimaat (%): <input type="number" id="overbieding" value="15" class="input" /></label>
-      </form>
-
-      <div class="mt-8">
-        <h2 class="text-lg font-semibold mb-2">Tabel 1: Financieringsconstructie</h2>
-        <table class="w-full border text-left text-sm table-auto border-collapse">
-          <thead><tr class="bg-gray-100"><th class="border p-2">Component</th><th class="border p-2">Bedrag (€)</th></tr></thead>
-          <tbody id="constructieTabel"></tbody>
-        </table>
-      </div>
-
-      <div class="mt-8">
-        <h2 class="text-lg font-semibold mb-2">Tabel 2: Maandlasten</h2>
-        <table class="w-full border text-left text-sm table-auto border-collapse">
-          <thead><tr class="bg-gray-100"><th class="border p-2">Omschrijving</th><th class="border p-2">Bedrag</th></tr></thead>
-          <tbody id="maandlastTabel"></tbody>
-        </table>
-      </div>
+    <div class="mt-12">
+      <h2 class="text-2xl font-extrabold uppercase mb-4 bg-pink-300 inline-block px-2 border-2 border-black">Tabel 2:
+        Maandlasten</h2>
+      <table class="w-full border-2 border-black text-base">
+        <thead class="bg-black text-white">
+          <tr>
+            <th class="border-2 border-black p-2 uppercase">Omschrijving</th>
+            <th class="border-2 border-black p-2 uppercase">Bedrag</th>
+          </tr>
+        </thead>
+        <tbody id="maandlastTabel" class="bg-white"></tbody>
+      </table>
     </div>
+  </div>
+</body>
 
-    <script>
-      function checkPassword() {
-        const input = document.getElementById("passwordInput").value;
-        const error = document.getElementById("errorMessage");
-        if (input === "eliosam") {
-          document.getElementById("login").style.display = "none";
-          document.getElementById("content").classList.remove("hidden");
-        } else {
-          error.classList.remove("hidden");
-        }
-      }
-    </script>
-  </body>
 </html>
