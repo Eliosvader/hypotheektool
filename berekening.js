@@ -83,7 +83,7 @@ function schatBelastingdruk(inkomen) {
 function updateTables() {
   const get = (name) => +form[name].value || 0;
   const hypotheek = get("hypotheek");
-  const wozhypotheek = get("wozhypotheek");
+  const wozWaarde = get("wozWaarde");
   const renteHypotheek = get("renteHypotheek") / 100;
   const familiebank1 = get("familiebank1");
   const familiebank2 = get("familiebank2");
@@ -114,8 +114,9 @@ function updateTables() {
   const totaleRenteHypotheek = berekenEersteJaarRente(hypotheekPlusExtraLening, renteHypotheek);
   const totaleRenteFB = berekenEersteJaarRente(familiebank1, renteFB) + berekenEersteJaarRente(familiebank2, renteFB);
   const totaleRenteJaar = totaleRenteHypotheek + totaleRenteFB;
+  console.log(totaleRenteJaar);
 
-  const eigenWoningForfait = 0.0035 * wozhypotheek;
+  const eigenWoningForfait = 0.0035 * wozWaarde;
   const aftrekPost = Math.max(0, totaleRenteJaar - eigenWoningForfait);
 
   const totaalInkomen = inkomenCas + inkomenJolijn;
@@ -170,10 +171,17 @@ function updateTables() {
   <tr><td class="border-2 border-black p-2">Hypotheek (bruto)</td><td class="border-2 border-black p-2">€${mensualiteitHypotheek.toFixed(0)}</td></tr>
   <tr><td class="border-2 border-black p-2">Familiebank 1 (bruto)</td><td class="border-2 border-black p-2">€${mensualiteitFamiliebank1.toFixed(0)}</td></tr>
   <tr><td class="border-2 border-black p-2">Familiebank 2 (bruto)</td><td class="border-2 border-black p-2">€${mensualiteitFamiliebank2.toFixed(0)}</td></tr>
+   <tr class="bg-black text-yellow-300 font-bold">
+    <td class="border-2 border-black p-2">Bruto maandlast</td>
+    <td class="border-2 border-black p-2">€${(mensualiteitHypotheek + mensualiteitFamiliebank1 + mensualiteitFamiliebank2).toFixed(0)}</td>
+  </tr>  
+  <tr class="border-2 border-black font-bold uppercase">
+    <td colspan="2" class="p-2 border-2 border-black">Aftrekposten</td>
+  </tr>
   <tr><td class="border-2 border-black p-2">Renteaftrek totaal</td><td class="border-2 border-black p-2">–€${renteAftrek.toFixed(0)}</td></tr>
   <tr><td class="border-2 border-black p-2">Schenking ouders</td><td class="border-2 border-black p-2">–€${schenkingMaand.toFixed(0)}</td></tr>
   <tr class="bg-black text-yellow-300 font-bold">
-    <td class="border-2 border-black p-2">Totaal maandlast</td>
+    <td class="border-2 border-black p-2">Netto maandlast</td>
     <td class="border-2 border-black p-2">€${nettoTotaal.toFixed(0)}</td>
   </tr>`;
 }
