@@ -65,9 +65,6 @@ function berekenInkomstenbelasting(belastbaar) {
   return drempel1 * tarief1 + (drempel2 - drempel1) * tarief2 + (belastbaar - drempel2) * tarief3;
 }
 
-function berekenZvw(inkomen) {
-  return Math.min(inkomen, 71628) * 0.0575;
-}
 
 function schatBelastingdruk(inkomen) {
   const zelfstandigenaftrek = 2470;
@@ -76,9 +73,10 @@ function schatBelastingdruk(inkomen) {
   const belastbaarNaMkb = belastbaar * (1 - mkbVrijstelling);
   const inkomstenbelasting = berekenInkomstenbelasting(belastbaarNaMkb);
   const kortingen = berekenAlgemeneKorting(inkomen) + berekenArbeidsKorting(inkomen);
-  const zvw = berekenZvw(belastbaarNaMkb);
-  return Math.max(0, inkomstenbelasting - kortingen + zvw);
+
+  return Math.max(0, inkomstenbelasting - kortingen);
 }
+
 
 function updateTables() {
   const get = (name) => +form[name].value || 0;
@@ -114,7 +112,6 @@ function updateTables() {
   const totaleRenteHypotheek = berekenEersteJaarRente(hypotheekPlusExtraLening, renteHypotheek);
   const totaleRenteFB = berekenEersteJaarRente(familiebank1, renteFB) + berekenEersteJaarRente(familiebank2, renteFB);
   const totaleRenteJaar = totaleRenteHypotheek + totaleRenteFB;
-  console.log(totaleRenteJaar);
 
   const eigenWoningForfait = 0.0035 * wozWaarde;
   const aftrekPost = Math.max(0, totaleRenteJaar - eigenWoningForfait);
@@ -168,9 +165,25 @@ function updateTables() {
   </tr>`;
 
   maandlastTabel.innerHTML = `
-  <tr><td class="border-2 border-black p-2">Hypotheek (bruto)</td><td class="border-2 border-black p-2">€${mensualiteitHypotheek.toFixed(0)}</td></tr>
-  <tr><td class="border-2 border-black p-2">Familiebank 1 (bruto)</td><td class="border-2 border-black p-2">€${mensualiteitFamiliebank1.toFixed(0)}</td></tr>
-  <tr><td class="border-2 border-black p-2">Familiebank 2 (bruto)</td><td class="border-2 border-black p-2">€${mensualiteitFamiliebank2.toFixed(0)}</td></tr>
+ <tr>
+  <td class="border-2 border-black p-2">Hypotheek (bruto)</td>
+  <td class="border-2 border-black p-2">€${mensualiteitHypotheek.toFixed(0)}<br>
+    <small>Rente: €${(totaleRenteHypotheek / 12).toFixed(0)}, Aflossing: €${(mensualiteitHypotheek - (totaleRenteHypotheek / 12)).toFixed(0)}</small>
+  </td>
+</tr>
+
+ <tr>
+  <td class="border-2 border-black p-2">Familiebank 1 (bruto)</td>
+  <td class="border-2 border-black p-2">€${mensualiteitFamiliebank1.toFixed(0)}<br>
+    <small>Rente: €${(berekenEersteJaarRente(familiebank1, renteFB) / 12).toFixed(0)}, Aflossing: €${(mensualiteitFamiliebank1 - (berekenEersteJaarRente(familiebank1, renteFB) / 12)).toFixed(0)}</small>
+  </td>
+</tr>
+  <tr>
+  <td class="border-2 border-black p-2">Familiebank 2 (bruto)</td>
+  <td class="border-2 border-black p-2">€${mensualiteitFamiliebank2.toFixed(0)}<br>
+    <small>Rente: €${(berekenEersteJaarRente(familiebank2, renteFB) / 12).toFixed(0)}, Aflossing: €${(mensualiteitFamiliebank2 - (berekenEersteJaarRente(familiebank2, renteFB) / 12)).toFixed(0)}</small>
+  </td>
+</tr>
    <tr class="bg-black text-yellow-300 font-bold">
     <td class="border-2 border-black p-2">Bruto maandlast</td>
     <td class="border-2 border-black p-2">€${(mensualiteitHypotheek + mensualiteitFamiliebank1 + mensualiteitFamiliebank2).toFixed(0)}</td>
